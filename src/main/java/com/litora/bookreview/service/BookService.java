@@ -1,18 +1,20 @@
 package com.litora.bookreview.service;
 
+import com.litora.bookreview.dto.BookRequest;
+import com.litora.bookreview.dto.BookResponse;
 import com.litora.bookreview.model.Book;
 
 import java.util.List;
 
 public interface BookService {
 
-    Book createBook(Book book);
+    BookResponse createBook(BookRequest book);
 
-    List<Book> getAllBooks();
+    List<BookResponse> getAllBooks();
 
-    Book getBookById(Long id);
+    BookResponse getBookById(Long id);
 
-    Book updateBook(Long id, Book book);
+    BookResponse updateBook(Long id, BookRequest book);
 
-    void deleteBook(Long id);
+    String deleteBook(Long id);
 }
