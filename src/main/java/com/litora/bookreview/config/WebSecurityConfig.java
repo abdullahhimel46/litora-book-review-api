@@ -52,7 +52,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/books/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(401);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"message\": \"You are not authorized! Please authorize to access this endpoint.\"}");
+                }))
                 .build();
     }
 
