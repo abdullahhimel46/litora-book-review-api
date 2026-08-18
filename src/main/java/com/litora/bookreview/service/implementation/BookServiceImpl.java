@@ -2,6 +2,9 @@ package com.litora.bookreview.service.implementation;
 
 import com.litora.bookreview.dto.BookRequest;
 import com.litora.bookreview.dto.BookResponse;
+import com.litora.bookreview.exception.BookAlreadyExistsException;
+import com.litora.bookreview.exception.BookNotFoundException;
+import com.litora.bookreview.exception.DeletionFailedException;
 import com.litora.bookreview.mapper.BookMapper;
 import com.litora.bookreview.model.Book;
 import com.litora.bookreview.repository.BookRepository;
@@ -23,7 +26,7 @@ public class BookServiceImpl implements BookService {
         boolean existingBook = bookRepository.existsByTitleAndAuthor(
                 request.title(), request.author());
         if (existingBook) {
-            throw new RuntimeException(
+            throw new BookAlreadyExistsException(
                     "Book already exists with title: " + request.title() + " and author: " + request.author());
         }
 
@@ -44,7 +47,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse getBookById(Long id) {
         Book book = bookRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+                orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
 
         return BookMapper.toResponse(book);
     }
@@ -52,7 +55,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse updateBook(Long id, BookRequest book) {
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
 
         BookMapper.updateEntity(existingBook, book);
 
@@ -61,13 +64,21 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public String deleteBook(Long id) {
+        //case 1: if book doesn't exist in the database or deleted earlier
         boolean exists = bookRepository.existsById(id);
 
         if (!exists) {
-            throw new RuntimeException("Book not found with id: " + id);
+            throw new DeletionFailedException("Deletion failed: Book not found with id: " + id);
+        }
+        
+
+        // case-2: DB level error: Unexpected error while deleting from the DB
+        try{
+            bookRepository.deleteById(id);
+        } catch (Exception ex) {
+            throw new DeletionFailedException("Falied to delete book with id: "+id+".It might be linked to other recoreds.");
         }
 
-        bookRepository.deleteById(id);
         return "Book deleted successfully with id: " + id;
     }
 }
