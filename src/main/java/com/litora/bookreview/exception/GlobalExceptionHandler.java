@@ -19,8 +19,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DeletionFailedException.class)
-    public ResponseEntity<String> handleDeletionException(DeletionFailedException ex){
+    public ResponseEntity<CustomHttpResponse> handleDeletionException(DeletionFailedException ex){
         String errMsg = ex.getMessage();
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(errMsg);
+        CustomHttpResponse response = new CustomHttpResponse(null, Map.of("message", errMsg));
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+    }
+
+    @ExceptionHandler(BookAlreadyExistsException.class)
+    public ResponseEntity<CustomHttpResponse> handleBookAlreadyExistsException(BookAlreadyExistsException ex){
+        String errMsg = ex.getMessage();
+        CustomHttpResponse response = new CustomHttpResponse(null, Map.of("message",errMsg));
+        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
     }
 }
