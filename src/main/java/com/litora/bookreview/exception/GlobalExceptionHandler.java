@@ -3,6 +3,7 @@ package com.litora.bookreview.exception;
 import com.litora.bookreview.dto.CustomHttpResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -30,5 +31,14 @@ public class GlobalExceptionHandler {
         String errMsg = ex.getMessage();
         CustomHttpResponse response = new CustomHttpResponse(null, Map.of("message",errMsg));
         return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CustomHttpResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        CustomHttpResponse response = new CustomHttpResponse(
+                null,
+                Map.of("message", "Oops, you're not authorized to perform this action!")
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 }
