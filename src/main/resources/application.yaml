@@ -24,3 +24,7 @@ springdoc:
     path: /swagger-ui.html
     operations-sorter: alpha
 
+jwt:
+  secret: my-super-secret-key-for-jwt-token-generation-1234567890
+  expiration: 86400000 # 24 hours in ms
+
