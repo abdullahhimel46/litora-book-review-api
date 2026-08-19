@@ -15,7 +15,7 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI litoraOpenAPI() {
-        final String securitySchemeName = "basicAuth";
+        final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
                 .info(new Info()
@@ -29,15 +29,16 @@ public class OpenApiConfig {
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://springdoc.org")))
-                // Apply the security scheme globally across all endpoints (adds lock icon & Authorize button)
+                // Apply Bearer security scheme globally across all endpoints
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 // Define reusable OpenAPI components
                 .components(new Components()
-                        // Register a security scheme for HTTP Basic Authentication
+                        // Register a security scheme for HTTP Bearer (JWT Token) Authentication
                         .addSecuritySchemes(securitySchemeName,
                                 new SecurityScheme()
-                                        .name(securitySchemeName) // Name identifier for the scheme
-                                        .type(SecurityScheme.Type.HTTP) // Authentication type: HTTP protocol
-                                        .scheme("basic"))); // Specific scheme: HTTP Basic (username/password)
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 }
