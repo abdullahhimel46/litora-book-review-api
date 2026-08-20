@@ -19,6 +19,7 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     @Override
     public BookResponse createBook(BookRequest request) {
@@ -30,17 +31,18 @@ public class BookServiceImpl implements BookService {
                     "Book already exists with title: " + request.title() + " and author: " + request.author());
         }
 
-        Book book = BookMapper.toEntity(request);
+
+        Book book = bookMapper.toEntity(request);
         Book savedBook = bookRepository.save(book);
 
-        return BookMapper.toResponse(savedBook);
+        return bookMapper.toResponse(savedBook);
     }
 
     @Override
     public List<BookResponse> getAllBooks() {
         return bookRepository.findAll().
                 stream().
-                map(BookMapper::toResponse).
+                map(bookMapper::toResponse).
                 toList();
     }
 
@@ -49,7 +51,7 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id).
                 orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
 
-        return BookMapper.toResponse(book);
+        return bookMapper.toResponse(book);
     }
 
     @Override
@@ -57,9 +59,9 @@ public class BookServiceImpl implements BookService {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
 
-        BookMapper.updateEntity(existingBook, book);
+        bookMapper.updateEntity(existingBook, book);
 
-        return BookMapper.toResponse(bookRepository.save(existingBook));
+        return bookMapper.toResponse(bookRepository.save(existingBook));
     }
 
     @Override

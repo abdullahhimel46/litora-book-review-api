@@ -3,35 +3,16 @@ package com.litora.bookreview.mapper;
 import com.litora.bookreview.dto.BookRequest;
 import com.litora.bookreview.dto.BookResponse;
 import com.litora.bookreview.model.Book;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
-public class BookMapper {
+@Mapper(componentModel = "spring")
+public interface BookMapper {
 
-    public static Book toEntity(BookRequest request) {
-        Book book = new Book();
+    Book toEntity(BookRequest request);
 
-        book.setTitle(request.title());
-        book.setAuthor(request.author());
-        book.setGenre(request.genre());
-        book.setPublishedYear(request.publishedYear());
+    BookResponse toResponse(Book book);
 
-        return book;
-    }
-
-    public static BookResponse toResponse(Book book) {
-        return new BookResponse(
-                book.getId(),
-                book.getTitle(),
-                book.getAuthor(),
-                book.getGenre(),
-                book.getPublishedYear()
-        );
-    }
-
-    public static void updateEntity(Book book, BookRequest request) {
-        book.setTitle(request.title());
-        book.setAuthor(request.author());
-        book.setGenre(request.genre());
-        book.setPublishedYear(request.publishedYear());
-    }
+    void updateEntity(@MappingTarget Book book, BookRequest request);
 
 }
